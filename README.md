@@ -23,7 +23,6 @@ To ensure Habt runs automatically after reboot:
     Create a shortcut for main.exe.
 
     Press Win + R, type:
-    text
 
     shell:startup
 
