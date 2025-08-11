@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habt</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --sidebar-color: #252525;
+            --text-color: #d9d9d9;
+            --accent-color: #7f6df2;
+            --hover-color: #3a3a3a;
+            --border-color: #333;
+            --input-bg: #333;
+            --input-text: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-color);
+            border-right: 1px solid var(--border-color);
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 0 15px 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-footer {
+            padding: 15px 0 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .nav-button.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .nav-button i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .setting-item {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-color);
+            transform: scale(1.1);
+        }
+
+        /* Стили для переключателей */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--accent-color);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"] {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            border-radius: 4px;
+            max-width: 80px;
+        }
+
+        /* Добавляем иконки с помощью Font Awesome */
+        .fa {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="app-title">Habt</div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <button class="nav-button active" id="daily-btn">
+                <i class="fas fa-calendar-day"></i>
+                Ежедневные
+            </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button class="nav-button" id="settings-btn">
+                <i class="fas fa-cog"></i>
+                Настройки
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Ежедневные заметки</h1>
+        </div>
+        <div id="content-area">
+            <p>Добавьте описание</p>
+        </div>
+    </div>
+
+    <script>
+        // Цветовые варианты
+        const colorOptions = [
+            { name: 'Фиолетовый', value: '#7f6df2' },
+            { name: 'Синий', value: '#4d8ee6' },
+            { name: 'Зеленый', value: '#5dca88' },
+            { name: 'Красный', value: '#e74c3c' },
+            { name: 'Оранжевый', value: '#f39c12' },
+            { name: 'Бирюзовый', value: '#00ffff' }
+        ];
+
+        // Сохраняем выбранный цвет в localStorage
+        function saveAccentColor(color) {
+            localStorage.setItem('accentColor', color);
+            applyAccentColor(color);
+        }
+
+        // Применяем выбранный цвет
+        function applyAccentColor(color) {
+            document.documentElement.style.setProperty('--accent-color', color);
+            
+            // Обновляем активные кнопки
+            document.querySelectorAll('.nav-button.active').forEach(btn => {
+                btn.style.backgroundColor = color;
+            });
+            
+            // Обновляем заголовок приложения
+            document.querySelector('.app-title').style.color = color;
+            
+            // Обновляем переключатели
+            document.querySelectorAll('.toggle-switch input:checked + .toggle-slider').forEach(slider => {
+                slider.style.backgroundColor = color;
+            });
+        }
+
+        // Загружаем сохранённый цвет при загрузке
+        function loadAccentColor() {
+            const savedColor = localStorage.getItem('accentColor') || '#7f6df2';
+            applyAccentColor(savedColor);
+            return savedColor;
+        }
+
+        // Загрузка сохранённых настроек
+        function loadSettings() {
+            return {
+                notifications: localStorage.getItem('notifications') === 'true',
+                autoSave: localStorage.getItem('autoSave') !== 'false',
+                saveToDailyNote: localStorage.getItem('saveToDailyNote') === 'true'
+            };
+        }
+
+        // Сохранение настроек
+        function saveSetting(name, value) {
+            console.log(`Сохранение ${name}=${value}`);
+            localStorage.setItem(name, value.toString());
+        }
+
+        // Простая логика переключения между вкладками
+        document.getElementById('daily-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('settings-btn').classList.remove('active');
+            document.querySelector('.page-title').textContent = 'Ежедневные заметки';
+            document.getElementById('content-area').innerHTML = `
+                <p>Добавьте описание</p>
+            `;
+        });
+
+        document.getElementById('settings-btn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('daily-btn').classList.remove('active');
+            document.querySelector('.page-title').textContent = 'Настройки';
+            
+            const currentColor = loadAccentColor();
+            const settings = loadSettings();
+            
+            // Генерируем HTML для выбора цвета
+            const colorOptionsHTML = colorOptions.map(color => `
+                <div class="color-option ${color.value === currentColor ? 'selected' : ''}" 
+                     style="background: ${color.value}"
+                     data-color="${color.value}"
+                     title="${color.name}"></div>
+            `).join('');
+            
+            document.getElementById('content-area').innerHTML = `
+                <h2>Настройки приложения</h2>
+                <div class="setting-item">
+                    <label>Размер шрифта:</label>
+                    <input type="number" value="16" min="10" max="24">
+                </div>
+                <div class="setting-item">
+                    <label>Акцентный цвет:</label>
+                    <div class="color-options">
+                        ${colorOptionsHTML}
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="toggle-container">
+                        <label>Уведомления:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.notifications ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="toggle-container">
+                        <label>Автосохранение:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.autoSave ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="toggle-container">
+                        <label>Сохранять в ежедневную заметку:</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.saveToDailyNote ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            // Добавляем обработчики для выбора цвета
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedColor = this.getAttribute('data-color');
+                    saveAccentColor(selectedColor);
+                    
+                    // Обновляем выделение выбранного цвета
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Добавляем обработчики для переключателей
+            document.querySelectorAll('.toggle-switch input').forEach(input => {
+                const settingName = input.parentElement.previousElementSibling.textContent.trim().toLowerCase().replace(':', '').replace(/\s+/g, '');
+                
+                input.addEventListener('change', function() {
+                    saveSetting(settingName, this.checked);
+                });
+            });
+        });
+
+        // При загрузке страницы применяем сохранённые настройки
+        // Замените текущий script в index.html на этот:
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Загружаем конфиг при старте
+        const config = await window.electron.getConfig();
+        applyConfig(config);
+        
+        // Остальной код инициализации...
+    });
+
+    async function applyConfig(config) {
+        // Применяем настройки темы
+        document.documentElement.style.setProperty('--accent-color', config.theme.accent_color);
+        document.documentElement.style.setProperty('--bg-color', config.theme.bg_color);
+        document.documentElement.style.setProperty('--text-color', config.theme.text_color);
+        
+        // Обновляем другие элементы интерфейса в соответствии с конфигом
+        document.querySelectorAll('.nav-button.active').forEach(btn => {
+            btn.style.backgroundColor = config.theme.accent_color;
+        });
+        
+        document.querySelector('.app-title').style.color = config.theme.accent_color;
+    }
+
+    // Обновляем обработчики для сохранения настроек
+    document.getElementById('settings-btn').addEventListener('click', async function() {
+        // ... существующий код ...
+        
+        // Загружаем текущий конфиг
+        const config = await window.electron.getConfig();
+        
+        // Обновляем интерфейс в соответствии с конфигом
+        document.querySelectorAll('.toggle-switch input').forEach(input => {
+            const settingName = input.parentElement.previousElementSibling.textContent.trim()
+                .toLowerCase().replace(':', '').replace(/\s+/g, '_');
+            input.checked = config.settings[settingName] || false;
+        });
+        
+        // Обработчик для сохранения изменений
+        document.querySelectorAll('.toggle-switch input, input[type="number"]').forEach(input => {
+            input.addEventListener('change', async function() {
+                const settingName = this.parentElement.previousElementSibling.textContent.trim()
+                    .toLowerCase().replace(':', '').replace(/\s+/g, '_');
+                
+                const value = this.type === 'checkbox' ? this.checked : this.value;
+                const updates = { settings: { [settingName]: value } };
+                
+                await window.electron.updateConfig(updates);
+                applyConfig(await window.electron.getConfig());
+            });
+        });
+        
+        // Обработчик для цветов
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', async function() {
+                const selectedColor = this.getAttribute('data-color');
+                const updates = { theme: { accent_color: selectedColor } };
+                
+                await window.electron.updateConfig(updates);
+                applyConfig(await window.electron.getConfig());
+                
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+    });
+    </script>
+</body>
+</html>
